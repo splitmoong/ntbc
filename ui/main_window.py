@@ -8,7 +8,7 @@ from ui.converter import ConverterFrame
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("NTBC App")
+        self.title("NTBC")
         self.geometry("300x500")
         
         # Container for screens
@@ -35,10 +35,7 @@ class MainMenu(tk.Frame):
         super().__init__(parent)
         self.controller = controller
         
-        label = tk.Label(self, text="NTBC Main Menu", font=("Arial", 24))
-        label.pack(side="top", fill="x", pady=20)
-        
-        convert_btn = tk.Button(self, text="Open Converter",
+        convert_btn = tk.Button(self, text="Converter",
                                 command=lambda: controller.show_frame("ConverterFrame"),
                                 font=("Arial", 14), padx=20, pady=10)
         convert_btn.pack(pady=20)
