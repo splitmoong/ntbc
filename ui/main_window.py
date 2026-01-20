@@ -9,7 +9,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("NTBC App")
-        self.geometry("800x600")
+        self.geometry("300x500")
         
         # Container for screens
         self.container = tk.Frame(self)

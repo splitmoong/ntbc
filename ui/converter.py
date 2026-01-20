@@ -110,29 +110,54 @@ class ConverterFrame(tk.Frame):
         source_path = Path(source)
         output_path = Path(dest)
         
+        files_to_process = []
         if source_path.is_file():
-            # If source is file, append name + extension
-            new_filename = source_path.stem + "." + self.file_type_var.get()
-            output_path = output_path / new_filename
+            files_to_process.append(source_path)
+        elif source_path.is_dir():
+            valid_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tga'}
+            for item in source_path.iterdir():
+                if item.is_file() and item.suffix.lower() in valid_extensions:
+                    files_to_process.append(item)
         
-        # Create bcn object
-        try:
-            converter = bcn(
-                input_image=str(source_path),
-                output_image=str(output_path),
-                format=self.format_var.get(),
-                quality=quality,
-                use_gpu=True # Assuming GPU usage as per bcn.py default/check
-            )
+        if not files_to_process:
+            messagebox.showerror("Error", "No image files found to process.")
+            return
+
+        print(f"Found {len(files_to_process)} files to process.") # Debug print
+
             
-            # Check logic before running (per user request interpretation "check things before creating", handled via simple constructor validation mostly, but here we can add pre-checks if needed)
-            
-            result = converter.run()
-            
-            if result.returncode == 0:
-                messagebox.showinfo("Success", "Conversion completed successfully!")
-            else:
-                messagebox.showerror("Error", f"Conversion failed:\n{result.stderr}")
+        error_messages = []
+        success_count = 0
+        
+        for src_file in files_to_process:
+            try:
+                # Construct output filename
+                quality_str = f"{quality:.2f}"
+                new_filename = f"{src_file.stem}-{self.format_var.get()}-{quality_str}.{self.file_type_var.get()}"
+                out_file_path = output_path / new_filename
                 
-        except Exception as e:
-             messagebox.showerror("Error", f"An error occurred: {str(e)}")
+                converter = bcn(
+                    input_image=str(src_file),
+                    output_image=str(out_file_path),
+                    format=self.format_var.get(),
+                    quality=quality,
+                    use_gpu=True
+                )
+                
+                result = converter.run()
+                
+                if result.returncode == 0:
+                    success_count += 1
+                else:
+                    error_messages.append(f"{src_file.name}: {result.stderr}")
+                    
+            except Exception as e:
+                error_messages.append(f"{src_file.name}: {str(e)}")
+        
+        if not error_messages:
+            messagebox.showinfo("Success", f"Converted {success_count} files successfully!")
+        else:
+            msg = f"Completed with errors.\nSuccess: {success_count}\nFailures: {len(error_messages)}\n\nErrors:\n" + "\n".join(error_messages[:5])
+            if len(error_messages) > 5:
+                msg += "\n..."
+            messagebox.showerror("Conversion Issues", msg)
