@@ -1,4 +1,4 @@
-from bcn import bcn
+from src.bcn import bcn
 
 # Create BC1 compression
 job = bcn(

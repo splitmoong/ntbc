@@ -3,7 +3,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import tkinter as tk
-from ui.converter import ConverterFrame
+from ui.bcn_converter_window import ConverterFrame
+from ui.extract_endpoints_window import ExtractEndpointsFrame
 
 class App(tk.Tk):
     def __init__(self):
@@ -18,7 +19,7 @@ class App(tk.Tk):
         self.container.grid_columnconfigure(0, weight=1)
         
         self.frames = {}
-        for F in (MainMenu, ConverterFrame):
+        for F in (MainMenu, ConverterFrame, ExtractEndpointsFrame):
             page_name = F.__name__
             frame = F(parent=self.container, controller=self)
             self.frames[page_name] = frame
@@ -39,6 +40,11 @@ class MainMenu(tk.Frame):
                                 command=lambda: controller.show_frame("ConverterFrame"),
                                 font=("Arial", 14), padx=20, pady=10)
         convert_btn.pack(pady=20)
+
+        extract_btn = tk.Button(self, text="Extract Endpoints",
+                                command=lambda: controller.show_frame("ExtractEndpointsFrame"),
+                                font=("Arial", 14), padx=20, pady=10)
+        extract_btn.pack(pady=20)
 
 if __name__ == "__main__":
     app = App()

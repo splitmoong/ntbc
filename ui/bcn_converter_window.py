@@ -5,7 +5,7 @@ import sys
 
 # Ensure parent directory is in path to import bcn
 sys.path.append(str(Path(__file__).parent.parent))
-from bcn import bcn
+from src.bcn import bcn
 
 class ConverterFrame(tk.Frame):
     def __init__(self, parent, controller):
