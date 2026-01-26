@@ -27,16 +27,20 @@ class ExtractEndpointsFrame(tk.Frame):
         # Title
         tk.Label(self, text="Extract Endpoints", font=("Arial", 16)).pack(pady=10)
         
+        # Container for Source and Destination (Side by Side)
+        row1 = tk.Frame(self)
+        row1.pack(fill="x", padx=5, pady=5)
+
         # Source Selection
-        source_frame = tk.LabelFrame(self, text="Source File", padx=10, pady=10)
-        source_frame.pack(fill="x", padx=10, pady=5)
+        source_frame = tk.LabelFrame(row1, text="Source File", padx=10, pady=10)
+        source_frame.pack(side="left", fill="both", expand=True, padx=5)
         
         tk.Button(source_frame, text="Select File", command=self.select_source_file).pack(anchor="w")
         tk.Label(source_frame, textvariable=self.source_path).pack(fill="x", pady=5)
         
         # Destination Selection
-        dest_frame = tk.LabelFrame(self, text="Output Folder", padx=10, pady=10)
-        dest_frame.pack(fill="x", padx=10, pady=5)
+        dest_frame = tk.LabelFrame(row1, text="Output Folder", padx=10, pady=10)
+        dest_frame.pack(side="left", fill="both", expand=True, padx=5)
         
         tk.Button(dest_frame, text="Select Output Folder", command=self.select_dest_folder).pack(anchor="w")
         tk.Label(dest_frame, textvariable=self.dest_folder).pack(fill="x", pady=5)
