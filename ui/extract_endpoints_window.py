@@ -5,7 +5,7 @@ import sys
 
 # Ensure parent directory is in path to import src modules
 sys.path.append(str(Path(__file__).parent.parent))
-from src.extract_endpoints import extract_endpoints_to_json
+from src.extract_endpoints import EndpointExtractor
 
 class ExtractEndpointsFrame(tk.Frame):
     def __init__(self, parent, controller):
@@ -31,27 +31,25 @@ class ExtractEndpointsFrame(tk.Frame):
         row1 = tk.Frame(self)
         row1.pack(fill="x", padx=5, pady=5)
 
-        # Source Selection
-        source_frame = tk.LabelFrame(row1, text="Source File", padx=10, pady=10)
-        source_frame.pack(side="left", fill="both", expand=True, padx=5)
-        
-        tk.Button(source_frame, text="Select File", command=self.select_source_file).pack(anchor="w")
-        tk.Label(source_frame, textvariable=self.source_path).pack(fill="x", pady=5)
-        
-        # Destination Selection
-        dest_frame = tk.LabelFrame(row1, text="Output Folder", padx=10, pady=10)
-        dest_frame.pack(side="left", fill="both", expand=True, padx=5)
-        
-        tk.Button(dest_frame, text="Select Output Folder", command=self.select_dest_folder).pack(anchor="w")
-        tk.Label(dest_frame, textvariable=self.dest_folder).pack(fill="x", pady=5)
+        tk.Label(row1, text="Source Folder:", anchor="w").pack(fill="x", padx=15)
+        source_frame = tk.Frame(row1)
+        source_frame.pack(fill="x", padx=15, pady=5)
+        tk.Entry(source_frame, textvariable=self.source_path).pack(side="left", fill="x", expand=True)
+        tk.Button(source_frame, text="Browse", command=self.select_source_folder).pack(side="right", padx=5)
+
+        tk.Label(row1, text="Output Folder:", anchor="w").pack(fill="x", padx=15, pady=(10, 0))
+        dest_frame = tk.Frame(row1)
+        dest_frame.pack(fill="x", padx=15, pady=5)
+        tk.Entry(dest_frame, textvariable=self.dest_folder).pack(side="left", fill="x", expand=True)
+        tk.Button(dest_frame, text="Browse", command=self.select_dest_folder).pack(side="right", padx=5)
         
         # Extract Button
         tk.Button(self, text="Extract", command=self.extract, font=("Arial", 12, "bold"), bg="#4CAF50", fg="white").pack(pady=20)
 
-    def select_source_file(self):
-        filename = filedialog.askopenfilename(filetypes=[("DDS files", "*.dds")])
-        if filename:
-            self.source_path.set(filename)
+    def select_source_folder(self):
+        folder = filedialog.askdirectory()
+        if folder:
+            self.source_path.set(folder)
 
     def select_dest_folder(self):
         folder = filedialog.askdirectory()
@@ -72,7 +70,8 @@ class ExtractEndpointsFrame(tk.Frame):
             return
             
         try:
-            output_file = extract_endpoints_to_json(source, output_folder=dest)
-            messagebox.showinfo("Success", f"Endpoints extracted to:\n{output_file}")
+            extractor = EndpointExtractor(source, dest)
+            output_file = extractor.extract()
+            messagebox.showinfo("Success", f"Dataset created at:\n{output_file}")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to extract endpoints:\n{str(e)}")
